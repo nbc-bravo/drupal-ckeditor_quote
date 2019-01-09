@@ -1,0 +1,12 @@
+{
+  "name": "drupal/ckeditor_quote",
+  "description": "Provides a CKEditor plugin to embed a quote with text and author.",
+  "type": "drupal-module",
+  "homepage": "http://drupal.org/project/ckeditor_quote",
+  "authors": [],
+  "support": {
+    "issues": "http://drupal.org/project/ckeditor_quote",
+    "source": "http://cgit.drupalcode.org/ckeditor_quote"
+  },
+  "license": "GPL-2.0+"
+}
