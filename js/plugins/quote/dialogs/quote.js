@@ -19,91 +19,98 @@ CKEDITOR.dialog.add('quoteDialog', function (editor) {
 
     // Dialog window contents definition.
     contents: [
-    {
-      // Definition of the Basic Settings dialog tab (page).
-      id: 'tab-basic',
-      label: 'Basic Settings',
-
-      // The tab contents.
-      elements: [
       {
-        // Quote text input field.
-        type: 'textarea',
-        id: 'text',
-        label: lang.dialogQuoteText,
+        // Definition of the Basic Settings dialog tab (page).
+        id: 'tab-basic',
+        label: 'Basic Settings',
 
-        // Validation checking whether the field is not empty.
-        validate: CKEDITOR.dialog.validate.notEmpty(lang.dialogQuoteTextNotEmpty),
+        // The tab contents.
+        elements: [
+          {
+            // Quote text input field.
+            type: 'textarea',
+            id: 'text',
+            label: lang.dialogQuoteText,
 
-        // Called by the main setupContent call on dialog initialization.
-        setup: function (element) {
-          var paragraphs = element.find('p');
-          if (paragraphs.count() > 0) {
-            var quote = paragraphs.getItem(0).getText();
-            for (var i = 1; i < paragraphs.count(); i++) {
-              quote += '\n' + paragraphs.getItem(i).getText();
+            // Validation checking whether the field is not empty.
+            validate: CKEDITOR.dialog.validate.notEmpty(lang.dialogQuoteTextNotEmpty),
+
+            // Called by the main setupContent call on dialog initialization.
+            setup: function (element) {
+              var paragraphs = element.find('p');
+              if (paragraphs.count() > 0) {
+                var quote = paragraphs.getItem(0).getText();
+                for (var i = 1; i < paragraphs.count(); i++) {
+                  quote += '\n' + paragraphs.getItem(i).getText();
+                }
+                this.setValue(quote);
+              }
+              else {
+                // It is a common blockquote without <p>.
+                this.setValue(element.getText());
+              }
+            },
+
+            // Called by the main commitContent call on dialog confirmation.
+            commit: function (element) {
+              // Clear element HTML.
+              element.setHtml('');
+
+              // Create quote wrapper.
+              var wrapper = editor.document.createElement('div');
+              wrapper.setAttribute('class', 'field-quote');
+
+              // Set a <p> for each line.
+              var lines = this.getValue().split(/\r\n|\r|\n/g);
+              for (var i = 0; i < lines.length; i++) {
+                var p = editor.document.createElement('p');
+                p.setText(lines[i]);
+                wrapper.append(p);
+              }
+
+              // Append element.
+              element.append(wrapper);
             }
-            this.setValue(quote);
-          }
-          else {
-            // It is a common blockquote without <p>.
-            this.setValue(element.getText());
-          }
-        },
+          },
+          {
+            // Quote author input field.
+            type: 'text',
+            id: 'author',
+            label: lang.dialogQuoteAuthor,
 
-        // Called by the main commitContent call on dialog confirmation.
-        commit: function (element) {
-          // Clear element HTML.
-          element.setHtml('');
+            // Called by the main setupContent call on dialog initialization.
+            setup: function (element) {
+              var div = element.findOne('div.field-quote-author');
+              if (div !== null) {
+                this.setValue(div.getText());
+              }
+            },
 
-          // Set a <p> for each line.
-          var lines = this.getValue().split(/\r\n|\r|\n/g);
-          for (var i = 0; i < lines.length; i++) {
-            var p = editor.document.createElement('p');
-            p.setText(lines[i]);
-            element.append(p);
-          }
-        }
-      },
-      {
-        // Quote author input field.
-        type: 'text',
-        id: 'author',
-        label: lang.dialogQuoteAuthor,
-
-        // Called by the main setupContent call on dialog initialization.
-        setup: function (element) {
-          var div = element.findOne('div');
-          if (div !== null) {
-            this.setValue(div.getText());
-          }
-        },
-
-        // Called by the main commitContent call on dialog confirmation.
-        commit: function (element) {
-          var div = element.findOne('div');
-          if (div === null) {
-            if (this.getValue() !== '') {
-              div = editor.document.createElement('div');
-              element.append(div);
-              div.setAttribute('class', 'author');
-              div.setText(this.getValue());
+            // Called by the main commitContent call on dialog confirmation.
+            commit: function (element) {
+              var div = element.findOne('div.field-quote-author');
+              if (div === null) {
+                if (this.getValue() !== '') {
+                  div = editor.document.createElement('div');
+                  element.append(div);
+                  div.setAttribute('class', 'field-quote-author');
+                  div.setText(this.getValue());
+                }
+              }
+              else {
+                if (this.getValue() !== '') {
+                  div.setAttribute('class', 'field-quote-author');
+                  div.setText(this.getValue());
+                }
+                else {
+                  // Author has been removed, remove div.
+                  div.remove();
+                }
+              }
             }
           }
-          else {
-            if (this.getValue() !== '') {
-              div.setAttribute('class', 'author');
-              div.setText(this.getValue());
-            }
-            else {
-              // Author has been removed, remove div.
-              div.remove();
-            }
-          }
-        }
+        ]
       }
-      ]
-    }
     ],
 
     // Invoked when the dialog is loaded.
