@@ -154,6 +154,7 @@ CKEDITOR.dialog.add('quoteDialog', function (editor) {
       var dialog = this;
 
       var blockquote = this.element;
+      blockquote.setAttribute('class', 'pull-quote');
 
       // Invoke the commit methods of all dialog elements, so the <blockquote> element gets modified.
       this.commitContent(blockquote);
